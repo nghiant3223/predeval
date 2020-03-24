@@ -104,7 +104,7 @@ func (v *visitor) visitMembershipExpression(c *expression.MembershipExpression) 
 		return nil, err
 	}
 
-	// evaluateMembershipOperator must be passed a c.RightOperand to implement lazy evaluation
+	// evaluateMembershipOperator must be passed a []Expression to implement lazy evaluation
 	return v.evaluateMembershipOperator(leftResult, c.RightOperand, c.Operator)
 }
 

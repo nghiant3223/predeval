@@ -256,6 +256,10 @@ func (s *ParserSuite) TestLogical() {
 			Input:    "!''",
 			Expected: true,
 		},
+		{
+			Input:    "(100 < 2 or 23 > 2.0) and 320 > 200",
+			Expected: true,
+		},
 	} {
 		tree, err := s.parser.Parse(t.Input)
 		s.NoError(err)

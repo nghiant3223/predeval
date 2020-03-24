@@ -16,7 +16,7 @@ func (v *visitor) evaluateMembershipOperator(leftResult interface{}, rightOperan
 				return nil, err
 			}
 			isEqual, err := v.evaluateBinaryOperator(leftResult, itemResult, op.Eq)
-			// If cannot leftResult is not comparable with this item, try next item
+			// If leftResult is not comparable with this item, try next item
 			if err != nil && err != errors.InvalidOperation {
 				return nil, err
 			}
