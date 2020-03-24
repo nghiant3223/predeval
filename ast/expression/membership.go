@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ntncsebku/reloader/eval"
 	"github.com/ntncsebku/reloader/op"
 )
 
@@ -30,8 +29,4 @@ func (e *MembershipExpression) String() string {
 	membersString := strings.Join(members, ",")
 
 	return fmt.Sprintf("Membership(%s,%s,[%s])", e.Operator, e.LeftOperand, membersString)
-}
-
-func (e *MembershipExpression) Accept(v eval.Visitor) {
-
 }

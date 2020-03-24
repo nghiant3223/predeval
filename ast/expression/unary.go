@@ -3,7 +3,6 @@ package expression
 import (
 	"fmt"
 
-	"github.com/ntncsebku/reloader/eval"
 	"github.com/ntncsebku/reloader/op"
 )
 
@@ -21,8 +20,4 @@ func NewUnaryExpression(operator string, operand Expression) *UnaryExpression {
 
 func (e *UnaryExpression) String() string {
 	return fmt.Sprintf("Unary(%s,%s)", e.Operator, e.Operand)
-}
-
-func (e *UnaryExpression) Accept(v eval.Visitor) {
-
 }

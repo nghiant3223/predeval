@@ -23,7 +23,7 @@ func (p *predicateParser) Parse(input string) (exp expression.Expression, err er
 		// which is triggered by antlr.ParseTreeWalkerDefault.Walk(astGenerator, antlrParser.Start())
 		if r := recover(); r != nil {
 			exp = nil
-			err, _ = r.(errors.ListenerError)
+			err, _ = r.(error)
 		}
 	}()
 

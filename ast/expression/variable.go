@@ -2,8 +2,6 @@ package expression
 
 import (
 	"fmt"
-
-	"github.com/ntncsebku/reloader/eval"
 )
 
 type Variable struct {
@@ -17,8 +15,4 @@ func NewVariable(name string) *Variable {
 
 func (e *Variable) String() string {
 	return fmt.Sprintf("Var(%s)", e.Name)
-}
-
-func (e *Variable) Accept(v eval.Visitor) {
-
 }
