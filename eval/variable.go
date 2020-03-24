@@ -7,13 +7,13 @@ import (
 	"github.com/ntncsebku/reloader/errors"
 )
 
-func (v *visitor) evaluateVariable(name string) interface{} {
+func (v *visitor) evaluateVariable(name string) (interface{}, error) {
 	value, ok := v.mapVariableNameToValue[strings.ToLower(name)]
 	if !ok {
-		panic(errors.VariableHasNoValue)
+		return nil, errors.VariableHasNoValue
 	}
 
-	return parsingVariableValue(value)
+	return parsingVariableValue(value), nil
 }
 
 func parsingVariableValue(value string) interface{} {

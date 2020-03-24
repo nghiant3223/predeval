@@ -14,18 +14,12 @@ func NewEvaluator() Evaluator {
 	return &evaluator{}
 }
 
-func (e evaluator) Evaluate(exp expression.Expression, args map[string]string) (value interface{}, err error) {
-	defer func() {
-		// If there is any error while evaluate predicate at runtime
-		// Include type mismatch, divide by zero, ...
-		if r := recover(); r != nil {
-			value = nil
-			err, _ = r.(error)
-		}
-	}()
-
+func (e evaluator) Evaluate(exp expression.Expression, args map[string]string) (interface{}, error) {
 	visitor := newEvalVisitor(args)
-	value = visitor.Visit(exp)
+	value, err := visitor.Visit(exp)
+	if err != nil {
+		return nil, err
+	}
 
 	return value, nil
 }

@@ -6,7 +6,7 @@ import (
 )
 
 //// Evaluate for op Not Add Sub
-func (v *visitor) evaluateUnaryOperator(operandResult interface{}, operator op.Operator) interface{} {
+func (v *visitor) evaluateUnaryOperator(operandResult interface{}, operator op.Operator) (interface{}, error) {
 	if operandInt, ok := operandResult.(int64); ok {
 		return evaluateUnaryInt(operandInt, operator)
 	}
@@ -23,55 +23,55 @@ func (v *visitor) evaluateUnaryOperator(operandResult interface{}, operator op.O
 		return evaluateUnaryBool(operandBool, operator)
 	}
 
-	panic(errors.InvalidDataType)
+	return nil, errors.InvalidDataType
 }
 
-func evaluateUnaryInt(operand int64, operator op.Operator) interface{} {
+func evaluateUnaryInt(operand int64, operator op.Operator) (interface{}, error) {
 	switch operator {
 	// Logical
 	case op.Not:
-		return operand != 0
+		return operand == 0, nil
 	// Arithmetic
 	case op.Add:
-		return operand
+		return operand, nil
 	case op.Sub:
-		return -operand
+		return -operand, nil
 	default:
-		panic(errors.InvalidOperation)
+		return nil, errors.InvalidOperation
 	}
 }
 
-func evaluateUnaryFloat(operand float64, operator op.Operator) interface{} {
+func evaluateUnaryFloat(operand float64, operator op.Operator) (interface{}, error) {
 	switch operator {
 	// Logical
 	case op.Not:
-		return operand != 0
+		return operand == 0, nil
 	// Arithmetic
 	case op.Add:
-		return operand
+		return operand, nil
 	case op.Sub:
-		return -operand
+		return -operand, nil
 	default:
-		panic(errors.InvalidOperation)
+		return nil, errors.InvalidOperation
 	}
 }
 
-func evaluateUnaryString(operand string, operator op.Operator) interface{} {
+func evaluateUnaryString(operand string, operator op.Operator) (interface{}, error) {
 	switch operator {
 	// Logical
 	case op.Not:
-		return operand != ""
+		return operand == "", nil
 	default:
-		panic(errors.InvalidOperation)
+		return nil, errors.InvalidOperation
 	}
 }
 
-func evaluateUnaryBool(operand bool, operator op.Operator) interface{} {
+func evaluateUnaryBool(operand bool, operator op.Operator) (interface{}, error) {
 	switch operator {
 	// Logical
 	case op.Not:
-		return !operand
+		return !operand, nil
 	default:
-		panic(errors.InvalidOperation)
+		return nil, errors.InvalidOperation
 	}
 }
