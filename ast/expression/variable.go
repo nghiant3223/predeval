@@ -5,8 +5,7 @@ import (
 )
 
 type Variable struct {
-	Name  string
-	Value interface{}
+	Name string
 }
 
 func NewVariable(name string) *Variable {

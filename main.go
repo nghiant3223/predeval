@@ -11,13 +11,13 @@ func main() {
 	parser := ast.NewParser()
 	evaluator := eval.NewEvaluator()
 
-	tree, err := parser.Parse("1 and 2.0")
+	tree, err := parser.Parse("100/(x-1)")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	result, err := evaluator.Evaluate(tree, nil)
+	result, err := evaluator.Evaluate(tree, map[string]string{"x": "1"})
 	if err != nil {
 		fmt.Println(err)
 		return

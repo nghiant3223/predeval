@@ -6,20 +6,20 @@ import (
 )
 
 //// Evaluate for op Not Add Sub
-func EvaluateUnaryOperator(operand interface{}, operator op.Operator) interface{} {
-	if operandInt, ok := operand.(int64); ok {
+func (v *visitor) evaluateUnaryOperator(operandResult interface{}, operator op.Operator) interface{} {
+	if operandInt, ok := operandResult.(int64); ok {
 		return evaluateUnaryInt(operandInt, operator)
 	}
 
-	if operandFloat, ok := operand.(float64); ok {
+	if operandFloat, ok := operandResult.(float64); ok {
 		return evaluateUnaryFloat(operandFloat, operator)
 	}
 
-	if operandString, ok := operand.(string); ok {
+	if operandString, ok := operandResult.(string); ok {
 		return evaluateUnaryString(operandString, operator)
 	}
 
-	if operandBool, ok := operand.(bool); ok {
+	if operandBool, ok := operandResult.(bool); ok {
 		return evaluateUnaryBool(operandBool, operator)
 	}
 
@@ -45,7 +45,7 @@ func evaluateUnaryFloat(operand float64, operator op.Operator) interface{} {
 	switch operator {
 	// Logical
 	case op.Not:
-		return operand != 0.0
+		return operand != 0
 	// Arithmetic
 	case op.Add:
 		return operand

@@ -13,7 +13,3 @@ type Visitor interface {
 	visitStringLiteral(c *expression.StringLiteral) interface{}
 	visitBoolLiteral(c *expression.BoolLiteral) interface{}
 }
-
-func newEvalVisitor(args map[string]string) *visitor {
-	return &visitor{mapVariableNameToValue: args}
-}

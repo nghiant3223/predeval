@@ -1,6 +1,8 @@
 package eval
 
 import (
+	"strings"
+
 	"github.com/ntncsebku/reloader/ast/expression"
 	"github.com/ntncsebku/reloader/errors"
 	"github.com/ntncsebku/reloader/op"
@@ -8,6 +10,19 @@ import (
 
 type visitor struct {
 	mapVariableNameToValue map[string]string
+}
+
+func newEvalVisitor(args map[string]string) *visitor {
+	// Lowercase all variables' name
+	for key, value := range args {
+		newKey := strings.ToLower(key)
+		if newKey != key {
+			args[newKey] = value
+			delete(args, key)
+		}
+	}
+
+	return &visitor{mapVariableNameToValue: args}
 }
 
 // Mimic method overloading
@@ -56,7 +71,7 @@ func (v *visitor) visitBinaryExpression(c *expression.BinaryExpression) interfac
 	// If operator is AND and the result of left operand is of bool type and equals FALSE,
 	// return FALSE immediately due to short-circuit characteristic
 	if leftBool, ok := leftResult.(bool); ok {
-		if leftBool && c.Operator == op.And {
+		if !leftBool && c.Operator == op.And {
 			return false
 		}
 	}
@@ -65,21 +80,24 @@ func (v *visitor) visitBinaryExpression(c *expression.BinaryExpression) interfac
 	rightResult := v.Visit(c.RightOperand)
 
 	// Evaluate final result
-	return EvaluateBinaryOperator(leftResult, rightResult, c.Operator)
+	return v.evaluateBinaryOperator(leftResult, rightResult, c.Operator)
 }
 
 func (v *visitor) visitUnaryExpression(c *expression.UnaryExpression) interface{} {
-	return v.Visit(c)
+	operandResult := v.Visit(c.Operand)
+	return v.evaluateUnaryOperator(operandResult, c.Operator)
 }
 
 func (v *visitor) visitMembershipExpression(c *expression.MembershipExpression) interface{} {
-	panic("implement me")
-	return false
+	// Evaluate left operand
+	leftResult := v.Visit(c.LeftOperand)
+
+	// evaluateMembershipOperator must be passed a c.RightOperand to implement lazy evaluation
+	return v.evaluateMembershipOperator(leftResult, c.RightOperand, c.Operator)
 }
 
 func (v *visitor) visitVariable(c *expression.Variable) interface{} {
-	panic("implement me")
-	return false
+	return v.evaluateVariable(c.Name)
 }
 
 func (v *visitor) visitIntLiteral(c *expression.IntLiteral) interface{} {

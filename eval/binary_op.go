@@ -8,26 +8,26 @@ import (
 )
 
 //// Evaluate for op Or And Eq Neq Le Lte Ge Gte  Add Sub Mul Div Mod
-func EvaluateBinaryOperator(left, right interface{}, operator op.Operator) interface{} {
-	left, right = assureBinaryType(left, right)
+func (v *visitor) evaluateBinaryOperator(leftResult, rightResult interface{}, operator op.Operator) interface{} {
+	leftResult, rightResult = assureBinaryType(leftResult, rightResult)
 
-	if leftInt, ok := left.(int64); ok {
-		rightInt, _ := right.(int64)
+	if leftInt, ok := leftResult.(int64); ok {
+		rightInt, _ := rightResult.(int64)
 		return evaluateBinaryInt(leftInt, rightInt, operator)
 	}
 
-	if leftFloat, ok := left.(float64); ok {
-		rightFloat, _ := right.(float64)
+	if leftFloat, ok := leftResult.(float64); ok {
+		rightFloat, _ := rightResult.(float64)
 		return evaluateBinaryFloat(leftFloat, rightFloat, operator)
 	}
 
-	if leftString, ok := left.(string); ok {
-		rightString, _ := right.(string)
+	if leftString, ok := leftResult.(string); ok {
+		rightString, _ := rightResult.(string)
 		return evaluateBinaryString(leftString, rightString, operator)
 	}
 
-	if leftBool, ok := left.(bool); ok {
-		rightBool, _ := right.(bool)
+	if leftBool, ok := leftResult.(bool); ok {
+		rightBool, _ := rightResult.(bool)
 		return evaluateBinaryBool(leftBool, rightBool, operator)
 	}
 
@@ -51,7 +51,7 @@ func assureBinaryType(left, right interface{}) (coercedLeft interface{}, coerced
 
 	// Reject for other cases when type of left operand is different from that of right operand
 	if reflect.TypeOf(left) != reflect.TypeOf(right) {
-		panic(errors.TypeMismatch)
+		panic(errors.InvalidOperation)
 	}
 
 	return left, right
@@ -85,6 +85,9 @@ func evaluateBinaryInt(left, right int64, operator op.Operator) interface{} {
 	case op.Mul:
 		return left * right
 	case op.Div:
+		if right == 0 {
+			panic(errors.DivideByZero)
+		}
 		return left / right
 	case op.Mod:
 		return left % right
@@ -97,9 +100,9 @@ func evaluateBinaryFloat(left, right float64, operator op.Operator) interface{} 
 	switch operator {
 	// Logical
 	case op.Or:
-		return left != 0.0 || right != 0.0
+		return left != 0 || right != 0
 	case op.And:
-		return left != 0.0 && right != 0.0
+		return left != 0 && right != 0
 	// Comparision
 	case op.Eq:
 		return left == right
@@ -121,6 +124,9 @@ func evaluateBinaryFloat(left, right float64, operator op.Operator) interface{} 
 	case op.Mul:
 		return left * right
 	case op.Div:
+		if right == 0 {
+			panic(errors.DivideByZero)
+		}
 		return left / right
 	default:
 		panic(errors.InvalidOperation)

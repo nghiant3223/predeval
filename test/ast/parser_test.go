@@ -18,7 +18,7 @@ type TestCase struct {
 	Expected interface{}
 }
 
-func TestRouterSuite(t *testing.T) {
+func TestParserSuite(t *testing.T) {
 	suite.Run(t, new(ParserSuite))
 }
 
