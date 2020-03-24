@@ -11,19 +11,27 @@ type Parser interface {
 	Parse(input string) (expression.Expression, error)
 }
 
-type predicateParser struct {
-}
+type predicateParser struct{}
 
 func NewParser() Parser {
 	return &predicateParser{}
 }
 
-func (p *predicateParser) Parse(input string) (expression.Expression, error) {
-	exp := antlr.NewInputStream(input)
+func (p *predicateParser) Parse(input string) (exp expression.Expression, err error) {
+	defer func() {
+		// If there is any error while lexing or parsing,
+		// which is triggered by antlr.ParseTreeWalkerDefault.Walk(astGenerator, antlrParser.Start())
+		if r := recover(); r != nil {
+			exp = nil
+			err, _ = r.(errors.ListenerError)
+		}
+	}()
+
+	expString := antlr.NewInputStream(input)
 	listener := &errors.ErrorListener{}
 
 	// Create the Lexer
-	lexer := parser.NewPredicateLexer(exp)
+	lexer := parser.NewPredicateLexer(expString)
 	lexer.AddErrorListener(listener)
 
 	// Create input stream to lexer
@@ -33,14 +41,9 @@ func (p *predicateParser) Parse(input string) (expression.Expression, error) {
 	antlrParser := parser.NewPredicateParser(stream)
 	antlrParser.AddErrorListener(listener)
 
-	// Parse the exp
-	condExprListener := newGenerator()
-	antlr.ParseTreeWalkerDefault.Walk(condExprListener, antlrParser.Start())
+	// Parse the expression
+	astGenerator := newGenerator()
+	antlr.ParseTreeWalkerDefault.Walk(astGenerator, antlrParser.Start())
 
-	// Check for any errors occur while lexing & parsing
-	if listener.ErrorCount > 0 {
-		return nil, errors.SyntaxError
-	}
-
-	return condExprListener.GetResult(), nil
+	return astGenerator.GetResult(), nil
 }

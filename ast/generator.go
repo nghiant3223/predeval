@@ -43,6 +43,7 @@ func (g *generator) ExitExp2(c *parser.Exp2Context) {
 		return
 	}
 
+	// For operators other than IN
 	if c.IN() == nil {
 		op := GetTerminalNodeAt(c.BaseParserRuleContext, 0)
 		right, left := g.stack.Pop(), g.stack.Pop()
@@ -50,9 +51,12 @@ func (g *generator) ExitExp2(c *parser.Exp2Context) {
 		return
 	}
 
+	// For IN operator only
 	var rights []expression.Expression
 	for i := 0; i < len(c.AllExp()); i++ {
-		rights = append(rights, g.stack.Pop())
+		leftmostMember := g.stack.Pop()
+		// Prepend leftmost member
+		rights = append([]expression.Expression{leftmostMember}, rights...)
 	}
 	left := g.stack.Pop()
 	op := c.IN().GetText()
@@ -74,12 +78,22 @@ func (g *generator) ExitExp4(c *parser.Exp4Context) {
 		return
 	}
 
+	op := GetTerminalNodeAt(c.BaseParserRuleContext, 0).GetText()
+	right, left := g.stack.Pop(), g.stack.Pop()
+	g.stack.Push(expression.NewBinaryExpression(op, right, left))
+}
+
+func (g *generator) ExitExp5(c *parser.Exp5Context) {
+	if c.Exp5() == nil {
+		return
+	}
+
 	operator := GetTerminalNodeAt(c.BaseParserRuleContext, 0).GetText()
 	operand := g.stack.Pop()
 	g.stack.Push(expression.NewUnaryExpression(operator, operand))
 }
 
-func (g *generator) ExitExp5(c *parser.Exp5Context) {
+func (g *generator) ExitExp6(c *parser.Exp6Context) {
 	if c.Exp() != nil {
 		return
 	}

@@ -29,6 +29,9 @@ type PredicateListener interface {
 	// EnterExp5 is called when entering the exp5 production.
 	EnterExp5(c *Exp5Context)
 
+	// EnterExp6 is called when entering the exp6 production.
+	EnterExp6(c *Exp6Context)
+
 	// ExitStart is called when exiting the start production.
 	ExitStart(c *StartContext)
 
@@ -49,4 +52,7 @@ type PredicateListener interface {
 
 	// ExitExp5 is called when exiting the exp5 production.
 	ExitExp5(c *Exp5Context)
+
+	// ExitExp6 is called when exiting the exp6 production.
+	ExitExp6(c *Exp6Context)
 }

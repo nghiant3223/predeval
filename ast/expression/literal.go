@@ -22,7 +22,7 @@ func NewIntLiteral(str string) *IntLiteral {
 }
 
 func (l *IntLiteral) String() string {
-	return fmt.Sprint(l.Value)
+	return fmt.Sprintf("Int(%d)", l.Value)
 }
 
 func (l *IntLiteral) Accept(v eval.Visitor) {
@@ -44,7 +44,7 @@ func NewBoolLiteral(str string) *BoolLiteral {
 }
 
 func (l *BoolLiteral) String() string {
-	return fmt.Sprint(l.Value)
+	return fmt.Sprintf("Bool(%t)", l.Value)
 }
 
 func (l *BoolLiteral) Accept(v eval.Visitor) {
@@ -66,7 +66,7 @@ func NewFloatLiteral(str string) *FloatLiteral {
 }
 
 func (l *FloatLiteral) String() string {
-	return fmt.Sprint(l.Value)
+	return fmt.Sprintf("Float(%f)", l.Value)
 }
 
 func (l *FloatLiteral) Accept(v eval.Visitor) {
@@ -80,11 +80,12 @@ type StringLiteral struct {
 }
 
 func NewStringLiteral(v string) *StringLiteral {
-	return &StringLiteral{Value: v}
+	realV := v[1:len(v) - 1]
+	return &StringLiteral{Value: realV}
 }
 
 func (l *StringLiteral) String() string {
-	return l.Value
+	return fmt.Sprintf("String(%s)", l.Value)
 }
 
 func (l *StringLiteral) Accept(v eval.Visitor) {

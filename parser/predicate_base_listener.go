@@ -62,3 +62,9 @@ func (s *BasePredicateListener) EnterExp5(ctx *Exp5Context) {}
 
 // ExitExp5 is called when production exp5 is exited.
 func (s *BasePredicateListener) ExitExp5(ctx *Exp5Context) {}
+
+// EnterExp6 is called when production exp6 is entered.
+func (s *BasePredicateListener) EnterExp6(ctx *Exp6Context) {}
+
+// ExitExp6 is called when production exp6 is exited.
+func (s *BasePredicateListener) ExitExp6(ctx *Exp6Context) {}

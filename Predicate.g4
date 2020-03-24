@@ -11,37 +11,39 @@ exp1:
     | exp2;
 
 exp2:
-    exp2 EQ exp1
-	| exp2 NEQ exp1
-	| exp2 LT exp1
-	| exp2 GT exp1
-	| exp2 LTE exp1
-	| exp2 GTE exp1
+    exp2 EQ exp3
+	| exp2 NEQ exp3
+	| exp2 LT exp3
+	| exp2 GT exp3
+	| exp2 LTE exp3
+	| exp2 GTE exp3
     | exp2 IN LB (exp (CM exp)*)? RB
 	| exp3;
 
 exp3:
-    exp3 MOD exp4
-    | exp3 DIV exp4
-    | exp3 MUL exp4
-    | exp3 ADD exp4
+    exp3 ADD exp4
     | exp3 SUB exp4
     | exp4;
 
 exp4:
-    ADD exp4
-    | SUB exp4
-    | NOT exp4
+    exp4 MOD exp5
+    | exp4 DIV exp5
+    | exp4 MUL exp5
     | exp5;
 
 exp5:
+    ADD exp5
+    | SUB exp5
+    | NOT exp5
+    | exp6;
+
+exp6:
     LP exp RP
 	| BOOL_LIT
 	| INT_LIT
 	| STRING_LIT
 	| FLOAT_LIT
-	| VAR
-	;
+	| VAR;
 
 // Literals
 BOOL_LIT: TRUE | FALSE;

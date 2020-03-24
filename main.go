@@ -9,7 +9,7 @@ import (
 func main() {
 	parser := ast.NewParser()
 
-	result, err := parser.Parse("(!a+b) * (c+d)")
+	result, err := parser.Parse("x + + + x")
 	if err != nil {
 		fmt.Println(err)
 		return
