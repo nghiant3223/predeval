@@ -1,5 +1,6 @@
 package eval
 
+import "C"
 import (
 	"strings"
 
@@ -29,31 +30,32 @@ func newEvalVisitor(args map[string]string) *visitor {
 func (v *visitor) Visit(c expression.Expression) (interface{}, error) {
 	switch c.(type) {
 	case *expression.BinaryExpression:
-		exp, _ := c.(*expression.BinaryExpression)
+		exp := c.(*expression.BinaryExpression)
 		return v.visitBinaryExpression(exp)
 	case *expression.UnaryExpression:
-		exp, _ := c.(*expression.UnaryExpression)
+		exp := c.(*expression.UnaryExpression)
 		return v.visitUnaryExpression(exp)
 	case *expression.MembershipExpression:
-		exp, _ := c.(*expression.MembershipExpression)
+		exp := c.(*expression.MembershipExpression)
 		return v.visitMembershipExpression(exp)
 	case *expression.Variable:
-		exp, _ := c.(*expression.Variable)
+		exp := c.(*expression.Variable)
 		return v.visitVariable(exp)
 	case *expression.IntLiteral:
-		exp, _ := c.(*expression.IntLiteral)
+		exp := c.(*expression.IntLiteral)
 		return v.visitIntLiteral(exp)
 	case *expression.StringLiteral:
-		exp, _ := c.(*expression.StringLiteral)
+		exp := c.(*expression.StringLiteral)
 		return v.visitStringLiteral(exp)
 	case *expression.FloatLiteral:
-		exp, _ := c.(*expression.FloatLiteral)
+		exp := c.(*expression.FloatLiteral)
 		return v.visitFloatLiteral(exp)
 	case *expression.BoolLiteral:
-		exp, _ := c.(*expression.BoolLiteral)
+		exp := c.(*expression.BoolLiteral)
 		return v.visitBoolLiteral(exp)
+	default:
+		return nil, errors.InvalidOperation
 	}
-	return nil, errors.InvalidOperation
 }
 
 func (v *visitor) visitBinaryExpression(c *expression.BinaryExpression) (interface{}, error) {
@@ -63,18 +65,22 @@ func (v *visitor) visitBinaryExpression(c *expression.BinaryExpression) (interfa
 		return nil, err
 	}
 
-	// If operator is OR and the result of left operand is of bool type and equals TRUE,
+	// If operator is OR and the result of left operand is not zero value,
 	// return TRUE immediately due to short-circuit characteristic
-	if leftBool, ok := leftResult.(bool); ok {
-		if leftBool && c.Operator == op.Or {
+	if c.Operator == op.Or {
+		if isZeroValue, err := v.isZeroValue(leftResult); err != nil {
+			return nil, err
+		} else if !isZeroValue {
 			return true, nil
 		}
 	}
 
-	// If operator is AND and the result of left operand is of bool type and equals FALSE,
+	// If operator is AND and the result of left operand is zero value,
 	// return FALSE immediately due to short-circuit characteristic
-	if leftBool, ok := leftResult.(bool); ok {
-		if !leftBool && c.Operator == op.And {
+	if c.Operator == op.And {
+		if isZeroValue, err := v.isZeroValue(leftResult); err != nil {
+			return nil, err
+		} else if isZeroValue {
 			return false, nil
 		}
 	}

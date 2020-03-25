@@ -98,9 +98,9 @@ func (s *ParserSuite) TestDivideByZero() {
 			Args:     newVariableMap("x", "1000"),
 		},
 		{
-			Input:    "100/x",
+			Input:    "100/xXx",
 			Expected: errors.DivideByZero,
-			Args:     newVariableMap("x", "100"),
+			Args:     newVariableMap("XXX", "0"),
 		},
 	} {
 		tree, err := s.parser.Parse(t.Input)
@@ -191,6 +191,11 @@ func (s *ParserSuite) TestMembership() {
 			Args:     newVariableMap("x", "true"),
 		},
 		{
+			Input:    "x + 1 in [x]",
+			Expected: false,
+			Args:     newVariableMap("x", "100"),
+		},
+		{
 			Input:    "x in [0, 0, 100]",
 			Expected: true,
 			Args:     newVariableMap("x", "100"),
@@ -201,7 +206,7 @@ func (s *ParserSuite) TestMembership() {
 			Args:     newVariableMap("x", "100"),
 		},
 		{
-			Input:    "x in [0, 0, 100]",
+			Input:    "x + 10 in [0, 0, 110]",
 			Expected: true,
 			Args:     newVariableMap("x", "100.0"),
 		},
@@ -212,6 +217,11 @@ func (s *ParserSuite) TestMembership() {
 		},
 		{
 			Input:    "x in [false, 23, 100 in [50+49, 50+50], false]",
+			Expected: true,
+			Args:     newVariableMap("x", "true"),
+		},
+		{
+			Input:    "!x in [23, 100 in [50+49, 50+50], false]",
 			Expected: true,
 			Args:     newVariableMap("x", "true"),
 		},
@@ -326,6 +336,68 @@ func (s *ParserSuite) TestMix() {
 		},
 		{
 			Input:    "(x > 100 and x < 200) and (x % 2 != 0 or x in [false, true, 100 + 50, x > 100])",
+			Expected: true,
+			Args:     newVariableMap("x", "150"),
+		},
+		{
+			Input:    "(x > 100 and x < 200) and (x % 2 != 0 or x in [false, true, 100 + 50, x > 100])",
+			Expected: true,
+			Args:     newVariableMap("x", "150"),
+		},
+	} {
+		tree, err := s.parser.Parse(t.Input)
+		s.NoError(err)
+
+		result, err := s.evaluator.Evaluate(tree, t.Args)
+		s.NoError(err)
+		s.Equal(t.Expected, result)
+	}
+}
+
+func (s *ParserSuite) TestShortCircuit() {
+	for _, t := range []TestCase{
+		{
+			Input:    "0 and 100/0",
+			Expected: false,
+			Args:     newVariableMap("x", "150"),
+		},
+		{
+			Input:    "1 or 100/0",
+			Expected: true,
+			Args:     newVariableMap("x", "150"),
+		},
+		{
+			Input:    "(100 - 100) and 100/0",
+			Expected: false,
+			Args:     newVariableMap("x", "150"),
+		},
+		{
+			Input:    "100 + 100 or 100/0",
+			Expected: true,
+			Args:     newVariableMap("x", "150"),
+		},
+		{
+			Input:    "('s' + 's') or 100/0",
+			Expected: true,
+			Args:     newVariableMap("x", "150"),
+		},
+		{
+			Input:    "100 + 100 or 100/0",
+			Expected: true,
+			Args:     newVariableMap("x", "150"),
+		},
+		{
+			Input:    "(x > 2000 and x < 1000) and 100/0",
+			Expected: false,
+			Args:     newVariableMap("x", "150"),
+		},
+		{
+			Input:    "0.5 - 0.5 and 100/0",
+			Expected: false,
+			Args:     newVariableMap("x", "150"),
+		},
+		{
+			Input:    "0.5 + 12.2 or 100/0",
 			Expected: true,
 			Args:     newVariableMap("x", "150"),
 		},

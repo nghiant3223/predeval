@@ -23,6 +23,8 @@ func (l *IntLiteral) String() string {
 	return fmt.Sprintf("Int(%d)", l.Value)
 }
 
+var ZeroIntLiteral = IntLiteral{Value: 0}
+
 // Bool
 
 type BoolLiteral struct {
@@ -40,6 +42,8 @@ func NewBoolLiteral(str string) *BoolLiteral {
 func (l *BoolLiteral) String() string {
 	return fmt.Sprintf("Bool(%t)", l.Value)
 }
+
+var ZeroBoolLiteral = BoolLiteral{Value: false}
 
 // Float
 
@@ -59,6 +63,8 @@ func (l *FloatLiteral) String() string {
 	return fmt.Sprintf("Float(%f)", l.Value)
 }
 
+var ZeroFloatLiteral = FloatLiteral{Value: 0}
+
 // String
 
 type StringLiteral struct {
@@ -66,10 +72,12 @@ type StringLiteral struct {
 }
 
 func NewStringLiteral(v string) *StringLiteral {
-	realV := v[1 : len(v)-1]
-	return &StringLiteral{Value: realV}
+	stringValue := v[1 : len(v)-1] // trim delimiter
+	return &StringLiteral{Value: stringValue}
 }
 
 func (l *StringLiteral) String() string {
 	return fmt.Sprintf("String(%s)", l.Value)
 }
+
+var ZeroStringLiteral = StringLiteral{Value: ""}

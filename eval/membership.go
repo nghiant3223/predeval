@@ -10,8 +10,8 @@ func (v *visitor) evaluateMembershipOperator(leftResult interface{}, rightOperan
 	switch operator {
 	case op.In:
 		// Return TRUE if left result equals to one of the right item result
-		for _, operandItem := range rightOperand {
-			itemResult, err := v.Visit(operandItem)
+		for _, item := range rightOperand {
+			itemResult, err := v.Visit(item)
 			if err != nil {
 				return nil, err
 			}
